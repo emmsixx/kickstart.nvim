@@ -626,9 +626,9 @@ require('lazy').setup({
       -- You can press `g?` for help in this menu.
       -- mason-tool-installer uses Mason registry names, not lspconfig names.
       -- Filter out servers whose lspconfig name differs from the Mason package name.
-      local ensure_installed = vim.tbl_filter(function(n) return n ~= 'ts_ls' end, vim.tbl_keys(servers or {}))
+      local lsp_to_mason = { ts_ls = 'typescript-language-server', rust_analyzer = 'rust-analyzer' }
+      local ensure_installed = vim.tbl_map(function(n) return lsp_to_mason[n] or n end, vim.tbl_keys(servers or {}))
       vim.list_extend(ensure_installed, {
-        'typescript-language-server', -- Mason package name for ts_ls
         'lua_ls', -- Lua Language server
         'stylua', -- Used to format Lua code
         'markdownlint', -- Used to lint Markdown files
