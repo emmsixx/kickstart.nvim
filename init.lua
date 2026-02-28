@@ -629,7 +629,7 @@ require('lazy').setup({
       local lsp_to_mason = { ts_ls = 'typescript-language-server', rust_analyzer = 'rust-analyzer' }
       local ensure_installed = vim.tbl_map(function(n) return lsp_to_mason[n] or n end, vim.tbl_keys(servers or {}))
       vim.list_extend(ensure_installed, {
-        'lua_ls', -- Lua Language server
+        'lua-language-server', -- Lua Language server
         'stylua', -- Used to format Lua code
         'markdownlint', -- Used to lint Markdown files
         -- You can add other tools here that you want Mason to install
