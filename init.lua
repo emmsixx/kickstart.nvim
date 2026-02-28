@@ -480,6 +480,7 @@ require('lazy').setup({
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
       { 'mason-org/mason.nvim', opts = {} },
+      'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
@@ -624,12 +625,9 @@ require('lazy').setup({
       --    :Mason
       --
       -- You can press `g?` for help in this menu.
-      -- mason-tool-installer uses Mason registry names, not lspconfig names.
-      -- Filter out servers whose lspconfig name differs from the Mason package name.
-      local lsp_to_mason = { ts_ls = 'typescript-language-server', rust_analyzer = 'rust-analyzer' }
-      local ensure_installed = vim.tbl_map(function(n) return lsp_to_mason[n] or n end, vim.tbl_keys(servers or {}))
+      local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'lua-language-server', -- Lua Language server
+        'lua_ls', -- Lua Language server
         'stylua', -- Used to format Lua code
         'markdownlint', -- Used to lint Markdown files
         -- You can add other tools here that you want Mason to install
@@ -874,14 +872,16 @@ require('lazy').setup({
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    lazy = false,
     build = ':TSUpdate',
+    branch = 'main',
     config = function()
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-        auto_install = true,
-        highlight = { enable = true },
-        indent = { enable = true },
-      }
+      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+      require('nvim-treesitter').install(parsers)
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = parsers,
+        callback = function() vim.treesitter.start() end,
+      })
     end,
   },
 
