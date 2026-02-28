@@ -624,8 +624,11 @@ require('lazy').setup({
       --    :Mason
       --
       -- You can press `g?` for help in this menu.
-      local ensure_installed = vim.tbl_keys(servers or {})
+      -- mason-tool-installer uses Mason registry names, not lspconfig names.
+      -- Filter out servers whose lspconfig name differs from the Mason package name.
+      local ensure_installed = vim.tbl_filter(function(n) return n ~= 'ts_ls' end, vim.tbl_keys(servers or {}))
       vim.list_extend(ensure_installed, {
+        'typescript-language-server', -- Mason package name for ts_ls
         'lua_ls', -- Lua Language server
         'stylua', -- Used to format Lua code
         'markdownlint', -- Used to lint Markdown files
@@ -871,13 +874,14 @@ require('lazy').setup({
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    build = ':TSUpdate',
     config = function()
-      local filetypes = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
-      require('nvim-treesitter').install(filetypes)
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = filetypes,
-        callback = function() vim.treesitter.start() end,
-      })
+      require('nvim-treesitter.configs').setup {
+        ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+        auto_install = true,
+        highlight = { enable = true },
+        indent = { enable = true },
+      }
     end,
   },
 
