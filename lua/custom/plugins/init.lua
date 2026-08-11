@@ -9,7 +9,9 @@ vim.pack.add {
 
 require('typescript-tools').setup {}
 
-require('presence').setup {
+local presence = require 'presence'
+
+presence.setup {
   auto_update = true,
   neovim_image_text = 'One performative Neovim please 🤓',
   main_image = 'neovim',
@@ -28,6 +30,19 @@ require('presence').setup {
   workspace_text = 'Coding rn...',
   line_number_text = 'Line %s out of %s',
 }
+
+-- presence.nvim otherwise uses the filename as its Discord tooltip when it
+-- has no asset for the file extension, which can expose extensionless or
+-- uncommon filenames. Treat every unknown extension as a generic text file.
+local get_file_extension = presence.get_file_extension
+presence.get_file_extension = function(path)
+  local extension = get_file_extension(path)
+  if extension and presence.options.file_assets[extension] then
+    return extension
+  end
+
+  return 'txt'
+end
 
 -- Iterate over all other Lua files in this directory and load them.
 local plugins_dir = vim.fs.joinpath(vim.fn.stdpath 'config', 'lua', 'custom', 'plugins')
