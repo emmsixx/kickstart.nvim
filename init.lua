@@ -377,6 +377,7 @@ do
   }
 
   -- [[ Colorscheme ]]
+  -- Keep the default independent of machine-local DMS/Matugen themes.
   -- You can easily change to a different colorscheme.
   -- Change the name of the colorscheme plugin below, and then
   -- change the command under that to load whatever the name of that colorscheme is.
